@@ -1,4 +1,5 @@
 <template>
+    <div>appshell</div>
 </template>
 
 <script>

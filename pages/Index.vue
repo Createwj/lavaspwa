@@ -2,14 +2,27 @@
     <div class="page-index">
         <h2>LAVAS</h2>
         <h4>[ˈlɑ:vəz]</h4>
+        <router-link :to="{
+        name:'detailId',
+        params:{
+            id:1
+        }
+        }">详情页面</router-link>
     </div>
 </template>
 
 <script>
-function setState(store) {}
+function setState(store,route) {
+    console.log('store 数据')
+    console.log(store)
+    console.log(route)
+}
 
 export default {
     name: 'index',
+    /**
+     * vue-mate的配置钩子
+     * **/
     metaInfo: {
         title: 'Home',
         titleTemplate: '%s - Lavas',
@@ -19,7 +32,7 @@ export default {
         ]
     },
     async asyncData({store, route}) {
-        setState(store);
+        setState(store,route);
     }
 };
 </script>

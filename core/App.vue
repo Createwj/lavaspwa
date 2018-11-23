@@ -122,7 +122,6 @@ $page-transition-duration = 0.35s
     text-align center
     color #2c3e50
     height 100%
-
     .app-view
         position absolute
         top 0

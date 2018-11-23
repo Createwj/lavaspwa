@@ -139,6 +139,130 @@ https://lavas.baidu.com/guide/v2/basic/init#lavasconfigjs
 
 
 
+### lavas 自动生成路由
+
+- 普通情况
+```
+/pages/Appshell.vue => /appshell
+/pages/Error.vue => /error
+```
+
+- index.vue
+```
+/pages/Index.vue => /
+```
+
+- 动态参数
+我们可以在 /pages/detail/ 目录中建立一个 vue 文件并命名为 _id.vue (下划线开头表示动态参数)。
+在这个 vue 文件中，我们可以通过 this.$route.params.id( script 中 )或者 {{$route.params.id}}( template 中 ) 获取这个参数。
+
+
+- 嵌套路由
+https://lavas.baidu.com/guide/v2/basic/init#%E5%B5%8C%E5%A5%97%E8%B7%AF%E7%94%B1
+Lavas 同样支持 vue-router 的嵌套路由。开发者需要在 /pages 目录中新建两个同名的目录和 Vue 文件(但首字母大小写不同，目录小写，文件大写)即可实现。
+```
+lavas-project
+└── pages/
+    ├── Detail.vue
+    └── detail/
+        ├── Product.vue
+        ├── Service.vue
+        └── Mixed.vue
+```
+Detail.vue
+
+```
+<template>
+    <header>xxx</header>
+    <router-view></router-view>
+</template>
+```
+使用vue-router来描述的话 如下
+```
+let routes = [{
+    path: '/detail',
+    name: 'detail',
+    component: xxx,
+    children: [{
+        path: 'product',
+        name: 'detailProduct',
+        component: xxx
+    },{
+        path: 'service',
+        name: 'detailService',
+        component: xxx
+    },{
+        path: 'mixed',
+        name: 'detailMixed',
+        component: xxx
+    }]
+}]
+```
+
+
+# lavas 基本命令
+
+##### lavas init
+
+![](https://gss0.bdstatic.com/9rkZbzqaKgQUohGko9WTAnF6hhy/assets/pwa/projects/1515680651550/lavas-init.png)
+
+
+##### lavas build
+
+开始构建项目
+使用 Lavas 对项目进行构建，内部会调用 babel, webpack 等，最终生成在 /dist/ 目录中 (可以通过 /lavas.config.js 进行修改)
+![](https://gss0.bdstatic.com/9rkZbzqaKgQUohGko9WTAnF6hhy/assets/pwa/projects/1515680651531/lavas-build.png)
+
+
+指定配置文件进行打包
+```
+lavas build config/lavas.another.config.js
+```
+
+
+##### lavas dev
+
+lavas dev config/lavas.another.config.js
+
+lavas dev --port 8000
+
+
+##### lavas start
+
+打包之后进入dist目录 运行项目 可以提前看到线上的效果
+
+
+
+##### lavas static
+启动服务器访问静态资源
+
+
+
+#### core 目录详解
+https://lavas.baidu.com/guide/v2/advanced/core
+
+
+
+
+# 注意
+
+asyncData 中访问不到this对象
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
