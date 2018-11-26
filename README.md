@@ -242,8 +242,6 @@ lavas dev --port 8000
 https://lavas.baidu.com/guide/v2/advanced/core
 
 
-
-
 # 注意
 
 asyncData 中访问不到this对象
@@ -251,21 +249,39 @@ asyncData 中访问不到this对象
 
 
 
+## 编写 Service Worker
+[文档](https://lavas.baidu.com/guide/v2/advanced/service-worker)
+首先打开根目录下的 `/lavas.config.js`，关注 `serviceWorker` 这一段，如下：
+
+
+作用：
+```
+将静态资源缓存在浏览器中 js css html eot, svg, ttf, woff
+
+将 sw-register.js 和 map 排除在外
+```
+
+```
+serviceWorker:{
+    enable:true,     是否开启serverwork
+    swSrc: path.join(__dirname, 'core/service-worker.js'),     生成 service-worker.js 所需的模板文件所在位置，后续会详细提及
+    swDest: path.join(BUILD_PATH, 'service-worker.js'),     生成的 service-worker.js 的存放位置
+}
+```
 
 
 
 
+### 构建 上线
 
+```
+lavas build 打包
 
+dist lavas static
+```
 
-
-
-
-
-
-
-
-
+我们都是拿自己勇气和努力 去赌一份不保证能够实现的理想
+我们都是拿自己的爱和付出 去赌一份不保证能走到最后的感情
 
 
 
