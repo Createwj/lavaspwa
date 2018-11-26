@@ -32,6 +32,7 @@ module.exports = {
             transitionClass: 'fade'
         }
     },
+    // 配置 serverWorke
     serviceWorker: {
         // If true, generate service-worker.js and sw-register.js
         // Default to `false`

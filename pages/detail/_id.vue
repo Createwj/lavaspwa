@@ -4,6 +4,8 @@
             <header class="detail-title">
                 Detail {{$route.params.id}}
             </header>
+            <p>{{this.weather.text}}</p>
+            <p>{{this.weather.temp}}</p>
             <!-- link to another detail -->
             <router-link :to="{
                             name: 'detailId',
@@ -18,6 +20,7 @@
     </div>
 </template>
 <script>
+import {mapState} from 'vuex'
 import axios from 'axios';
 export default {
     name: 'detail-_id',
@@ -31,11 +34,16 @@ export default {
             ]
         }
     },
-    async asyncData() {
-        let result = await axios(`https://query.yahooapis.com/v1/public/yql?q=select%20item.condition%20from%20weather.forecast%20where%20woeid%20%3D%202151849&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys`);
-        let condition = result.data.query.results.channel.item.condition;
-
-        console.log(`Weather of Shanghai: ${condition.text}, ${condition.temp}°F`);
+    async asyncData({store, route}) {
+         await store.dispatch('detail/setWeather', {woeid: 2151849});
+    },
+    computed: {
+        ...mapState('detail', [
+            'weather'
+        ])
+    },
+    created() {
+        console.log(`Weather of Shanghai: ${this.weather.text}, ${this.weather.temp}°F`);
     }
 };
 </script>
