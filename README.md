@@ -298,3 +298,14 @@ https://www.villainhr.com/page/2017/01/08/Service%20Worker%20%E5%85%A8%E9%9D%A2%
 明明喜欢不好意思开口 错过了好多 沉默里消磨得一干二净  我还爱着你 只是不再喜欢
 
 相处的不累 能让彼此舒适的人在一起
+
+
+```
+ps     # 查看当前正在运行的进程
+
+kill -9 [pid]     #=强制杀死某个进程  -9表示强制
+
+ps -aux | grep （node tomcat）    # 查看指定程序占用端口进程
+
+nohup node index.js  linux 自带启动弄的服务命令
+```
