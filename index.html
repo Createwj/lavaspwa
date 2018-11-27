@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>见缝插针</title>
+    <style>
+     .container {
+         width: 800px;
+         height: 600px;
+         border: 1px solid red;
+         margin: 20px auto;
+     }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <canvas id="canvas" width="800" height="600"></canvas>
+    </div>
+    <script>
+/**
+ *  使用面向对象编程思想实现
+ *
+ *  绘制图形：
+ *      1.转动小球:
+ *          关卡数
+ *          小球半径
+ *          线条长度
+ *          大圆半径
+ *          大圆中心坐标
+ *
+ *          每一关游戏具体数据参数：
+ *          小球数量
+ *          转动的速度
+ *          等待小球数量
+ *
+ *
+ *      2.等待小球:
+ *
+ * */
+var Game={
+    canvas:document.querySelector("#canvas"),//获取canvas画布
+    cxt:this.canvas.getContext("2d"),//创建canvas上下文环境(2d画笔)
+    index:0,//为了模拟数据的索引值
+    isPlay:true,//标识游戏是否失败
+    level:null,//关卡
+    ballNum:null,//转动小球数量
+    waitNum:null,//等待小球数量
+    speed:null,//转动的数度
+    radius:10,//小球半径
+    bigRadius:50,//大球半径
+    line:60,//线条的长度
+    centerX:400,//大圆的中心坐标
+    centerY:150,//大圆的中心坐标
+    balls:[],//存储转动小球的数据
+    waitBalls:[],//存储等待小球的数据
+    drawBig:function(){//定义一个绘制大圆的方法
+        this.cxt.save();
+        this.cxt.beginPath();
+        this.cxt.arc(this.centerX,this.centerY,this.bigRadius,0,2*Math.PI);
+        this.cxt.fill();
+
+        //绘制关卡数
+        this.cxt.font="bold 50px 微软雅黑";
+        this.cxt.fillStyle="#fff";
+        this.cxt.fillText(this.level,this.centerX,this.centerY);
+        this.cxt.closePath();
+        this.cxt.restore();
+    },
+    drawBall:function(){//定义一个绘制转动小球的方法
+        this.cxt.save();
+        this.cxt.translate(this.centerX,this.centerY);//移动原点坐标
+        var _this = this;
+        this.balls.forEach(function(item){
+            //this = > window ,jQuery 每次遍历的元素
+        _this.cxt.save();
+        _this.cxt.rotate(Math.PI/180*item.angle);//设置旋转
+         //为下一次绘制，做准备
+          item.angle +=_this.speed;
+            //判断转完一圈后返回，避免圈数累加后造成转动的卡顿（增加电脑的运算）
+          if(item.angle>=360)item.angle = item.angle - 360;
+
+        _this.cxt.beginPath();
+        _this.cxt.moveTo(0,-_this.bigRadius);
+        _this.cxt.lineTo(0,-(_this.bigRadius + _this.line));
+        _this.cxt.stroke();
+        _this.cxt.closePath();
+        _this.cxt.beginPath();
+        _this.cxt.arc(0,-(_this.bigRadius + _this.line + _this.radius),_this.radius,0,Math.PI*2);
+        //this.cxt.fillStyle = "#000";
+        _this.cxt.fill();
+        if(!item.numStr==""){//判断item 中的小球有数字进行绘制
+            _this.cxt.fillStyle = "#fff";
+            _this.cxt.fillText(item.numStr,0,-(_this.bigRadius + _this.line + _this.radius));
+        }
+        _this.cxt.closePath();
+        _this.cxt.restore();
+      })
+        this.cxt.restore();
+    },
+    drawWait:function(){//绘制等待小球
+        //清除等待小球区域内容
+        this.cxt.clearRect(this.centerX-this.radius,this.centerY + this.bigRadius + this.line + this.radius*2,this.radius*2,this.canvas.height-(this.centerY + this.bigRadius + this.line + this.radius*2)-this.radius);
+        this.cxt.save();
+        for(var i=0;i<this.waitBalls.length;i++){
+            this.cxt.beginPath();
+            this.cxt.arc(this.centerX,this.centerY + this.bigRadius + this.line + this.radius*4+(3*this.radius*i),this.radius,0,Math.PI*2);
+            this.cxt.fillStyle = "#000";
+            this.cxt.fill();
+            this.cxt.fillStyle = "#fff";
+            this.cxt.fillText(this.waitBalls[i].numStr,this.centerX,this.centerY + this.bigRadius + this.line + this.radius*4+(3*this.radius*i));
+            this.cxt.closePath();
+        }
+        this.cxt.restore();
+    },
+    play:function(){//鼠标点击
+        this.canvas.onclick = function(){
+
+            if(this.waitBalls.length!=0 && this.isPlay){
+                for(var i=0;i<this.balls.length;i++){
+                    // 170 - 190  之间撞球
+                    if(this.balls[i].angle>=171 && this.balls[i].angle <=189){
+                        this.isPlay = false;//标记为失败
+                        alert('小球被撞了！');
+                    }
+                }
+
+                if(this.waitBalls.length <=1 && this.isPlay){
+                    //alert('成功过关！');
+                    setTimeout(function(){
+                        this.index++;
+                        this.init(gameData);
+                    }.bind(this),200);
+
+                }
+                //删除等待中的第一个
+                var tmp = this.waitBalls.shift();
+                //判断是否已经过关
+                    //把删除的小球，设置一个角度，重新放入转动小球中
+                    tmp.angle = 180;//设置从等待区进入转动区域的角度
+                    this.balls.push(tmp);
+            }else{
+
+            }
+            //重新绘制等待小球
+            this.drawWait();
+
+        }.bind(this);
+    },
+    auto:function(){//小球转动
+        //this  - 》 Game
+        setInterval(function(){
+            //this - > window
+            //擦除转动小球区域
+            this.cxt.clearRect(this.centerX-(this.bigRadius+this.line+this.radius*2),this.centerY-(this.bigRadius+this.line+this.radius*2),(this.bigRadius+this.line+this.radius*2)*2,(this.bigRadius+this.line+this.radius*2)*2);
+            this.drawBig();//绘制大圆
+            this.drawBall();//绘制转动小球
+        }.bind(this),1000 / 60);//bind() 在setInterval 函数中，this 指向 window ,但我们需要调用的Game对象，所以可以通过bind(this)，来绑定auto 环境中的this(Game)
+    },
+    init:function(gameData){
+        this.level=gameData[this.index].level;
+        this.ballNum=gameData[this.index].ballNum;
+        this.waitNum = gameData[this.index].waitNum;
+        this.speed=gameData[this.index].speed;
+
+        //清空上一关遗留数据
+        this.waitBalls = [];
+        this.balls = [];
+
+        //设置全局的文字样式
+        this.cxt.textAlign="center";
+        this.cxt.textBaseline="middle";
+        /***
+         * 处理，生成转动小球的数据
+         *  因考虑到绘制一个转动小球 还包含一个角度 ，和数字
+         *  {
+         *      numStr:5,
+         *      angle:90
+         *  }
+         */
+        for(var i=0;i<this.ballNum;i++){
+            var angle = (360 / this.ballNum) * i;
+                this.balls.push({
+                    numStr:'',
+                    angle:angle
+                })
+        }
+        //处理等待小球的数据
+        for(var j=this.waitNum;j>0;j--){
+            this.waitBalls.push({
+                numStr:j,
+                angle:''
+            })
+        }
+        //绘制大圆
+        this.drawBig();
+        //绘制小圆
+        this.drawBall();
+
+        //绘制等待小球
+        this.drawWait();
+
+        //小球自动
+        this.auto();
+
+        //绑定事件
+        this.play();
+    }
+}
+// 定义一批模拟数据
+var gameData=[
+    {
+        level:1,
+        ballNum:3,
+        waitNum:5,
+        speed:0.5
+    }, {
+        level:2,
+        ballNum:4,
+        waitNum:6,
+        speed:0.6
+    }, {
+        level:3,
+        ballNum:5,
+        waitNum:7,
+        speed:0.7
+    }, {
+        level:4,
+        ballNum:6,
+        waitNum:8,
+        speed:0.75
+    }, {
+        level:5,
+        ballNum:3,
+        waitNum:9,
+        speed:0.78
+    }, {
+        level:6,
+        ballNum:7,
+        waitNum:10,
+        speed:0.5
+    }
+]
+Game.init(gameData);
+</script>
+</body>
+</html>
